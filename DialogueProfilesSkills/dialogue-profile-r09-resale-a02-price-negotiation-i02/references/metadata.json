@@ -1,0 +1,8 @@
+{
+  "skill_name": "dialogue-profile-r09-resale-a02-price-negotiation-i02",
+  "title": "多轮砍价型",
+  "source_file": "MasksSkills/r09_resale/a02_price_negotiation/i02.md",
+  "relation_code": "r09_resale",
+  "aspect_code": "a02_price_negotiation",
+  "item_code": "i02"
+}

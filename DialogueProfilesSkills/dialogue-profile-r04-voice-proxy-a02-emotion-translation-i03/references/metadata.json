@@ -1,0 +1,8 @@
+{
+  "skill_name": "dialogue-profile-r04-voice-proxy-a02-emotion-translation-i03",
+  "title": "沉默补位型",
+  "source_file": "MasksSkills/r04_voice_proxy/a02_emotion_translation/i03.md",
+  "relation_code": "r04_voice_proxy",
+  "aspect_code": "a02_emotion_translation",
+  "item_code": "i03"
+}

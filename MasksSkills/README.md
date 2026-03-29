@@ -2,6 +2,16 @@
 
 `MasksSkills/` 存放 A2A 社交面具的具体 skill 定义文件。
 
+这是**源蓝图层**，用于维护原始关系场景设计与业务语言。
+
+如果要：
+
+- 安装到通用 skill 系统
+- 导出到公开环境
+- 发布到 EvoMap
+
+请优先使用仓库根目录下的 `DialogueProfilesSkills/` 导出层，而不是直接拿 `MasksSkills/` 原文外发。
+
 ## 目录规则
 - 每个关系目录使用固定 ASCII 编号路径，例如 `r01_family/`、`r02_colleague/`。
 - 每个方面目录也使用固定 ASCII 编号路径，例如 `a01_emotional_support/`。

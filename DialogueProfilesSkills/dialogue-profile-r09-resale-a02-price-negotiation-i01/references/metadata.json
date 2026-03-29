@@ -1,0 +1,8 @@
+{
+  "skill_name": "dialogue-profile-r09-resale-a02-price-negotiation-i01",
+  "title": "试探底价型",
+  "source_file": "MasksSkills/r09_resale/a02_price_negotiation/i01.md",
+  "relation_code": "r09_resale",
+  "aspect_code": "a02_price_negotiation",
+  "item_code": "i01"
+}

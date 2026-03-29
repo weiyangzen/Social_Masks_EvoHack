@@ -1,0 +1,8 @@
+{
+  "skill_name": "dialogue-profile-r03-errand-a01-request-confirmation-i01",
+  "title": "需求澄清型",
+  "source_file": "MasksSkills/r03_errand/a01_request_confirmation/i01.md",
+  "relation_code": "r03_errand",
+  "aspect_code": "a01_request_confirmation",
+  "item_code": "i01"
+}

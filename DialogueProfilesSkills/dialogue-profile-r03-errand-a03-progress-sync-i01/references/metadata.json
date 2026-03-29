@@ -1,0 +1,8 @@
+{
+  "skill_name": "dialogue-profile-r03-errand-a03-progress-sync-i01",
+  "title": "节点播报型",
+  "source_file": "MasksSkills/r03_errand/a03_progress_sync/i01.md",
+  "relation_code": "r03_errand",
+  "aspect_code": "a03_progress_sync",
+  "item_code": "i01"
+}

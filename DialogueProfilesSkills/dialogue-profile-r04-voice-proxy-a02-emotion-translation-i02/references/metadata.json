@@ -1,0 +1,8 @@
+{
+  "skill_name": "dialogue-profile-r04-voice-proxy-a02-emotion-translation-i02",
+  "title": "尴尬化解型",
+  "source_file": "MasksSkills/r04_voice_proxy/a02_emotion_translation/i02.md",
+  "relation_code": "r04_voice_proxy",
+  "aspect_code": "a02_emotion_translation",
+  "item_code": "i02"
+}
