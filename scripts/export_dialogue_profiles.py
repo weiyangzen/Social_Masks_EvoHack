@@ -88,23 +88,70 @@ def relation_label_from_sections(sections: dict[str, str]) -> str:
     return RELATION_LABELS.get(raw_relation, raw_relation)
 
 
+def card_value(card: str, key: str) -> str:
+    m = re.search(rf"-\s*{re.escape(key)}:\s*(.+)", card)
+    return m.group(1).strip() if m else ""
+
+
+def list_items(text: str, limit: int = 5) -> list[str]:
+    items: list[str] = []
+    for line in text.splitlines():
+        s = line.strip()
+        if not s:
+            continue
+        s = re.sub(r"^[-*]\s*", "", s)
+        s = re.sub(r"^\d+\.\s*", "", s)
+        if not s:
+            continue
+        items.append(s)
+        if len(items) >= limit:
+            break
+    return items
+
+
+def render_bullets(items: list[str]) -> str:
+    if not items:
+        return "- 无"
+    return "\n".join(f"- {item}" for item in items)
+
+
+def render_numbered(items: list[str]) -> str:
+    if not items:
+        return "1. 先确认关系场景与目标。\n2. 再组织表达与边界。\n3. 最后给出可执行收口。"
+    return "\n".join(f"{idx}. {item}" for idx, item in enumerate(items, start=1))
+
+
+def first_sentence(text: str, fallback: str) -> str:
+    compact = re.sub(r"\s+", " ", text).strip()
+    if not compact:
+        return fallback
+    parts = re.split(r"[。！？!?]", compact, maxsplit=1)
+    out = parts[0].strip()
+    return out or fallback
+
+
 def build_skill_md(skill_name: str, title: str, sections: dict[str, str], source_rel: str) -> str:
+    card = sections.get("Skill Card", "").strip()
     relation_label = relation_label_from_sections(sections) or source_rel
+    aspect_label = card_value(card, "方面")
+    anchor = card_value(card, "蓝图锚点")
     positioning = transform_text(sections.get("面具定位", ""), relation_label)
     problems = transform_text(sections.get("解决的问题", ""), relation_label)
-    triggers = transform_text(sections.get("典型触发信号", ""), relation_label)
-    inputs = transform_text(sections.get("输入槽位", ""), relation_label)
-    outputs = transform_text(sections.get("输出要求", ""), relation_label)
-    steps = transform_text(sections.get("执行步骤", ""), relation_label)
-    strategies = transform_text(sections.get("话术与策略", ""), relation_label)
-    boundaries = transform_text(sections.get("边界与禁区", ""), relation_label)
-    risks = transform_text(sections.get("失败风险", ""), relation_label)
-    success = transform_text(sections.get("成功判定", ""), relation_label)
-    examples = transform_text(sections.get("示例开场", ""), relation_label)
+    triggers = render_bullets(list_items(transform_text(sections.get("典型触发信号", ""), relation_label), limit=4))
+    inputs = render_bullets(list_items(transform_text(sections.get("输入槽位", ""), relation_label), limit=4))
+    outputs = render_bullets(list_items(transform_text(sections.get("输出要求", ""), relation_label), limit=4))
+    steps = render_numbered(list_items(transform_text(sections.get("执行步骤", ""), relation_label), limit=5))
+    strategies = render_bullets(list_items(transform_text(sections.get("话术与策略", ""), relation_label), limit=4))
+    success = render_bullets(list_items(transform_text(sections.get("成功判定", ""), relation_label), limit=3))
+    examples = render_bullets(list_items(transform_text(sections.get("示例开场", ""), relation_label), limit=3))
+    boundary_items = list_items(transform_text(sections.get("边界与禁区", ""), relation_label), limit=2)
+    risk_items = list_items(transform_text(sections.get("失败风险", ""), relation_label), limit=2)
+    safety = render_bullets(boundary_items + risk_items)
+    one_liner = first_sentence(positioning, f"用于 {relation_label} 场景下的 {title} 对话辅助。")
+    problem_line = first_sentence(problems, "帮助用户把目标、分寸与下一步组织成可直接使用的话。")
     description = (
-        f"A2A relationship dialogue profile for {title}. "
-        "It helps users structure intent, tone, boundaries, and next-step phrasing in a lawful, "
-        "transparent, human-reviewed way without impersonation or identity deception."
+        f"A2A relationship dialogue profile for {relation_label} / {aspect_label or title} / {title}. "
+        f"{one_liner} It stays transparent, human-reviewed, and non-deceptive."
     )
     return f"""---
 name: {skill_name}
@@ -115,32 +162,19 @@ description: {description}
 
 这是一个面向公开 skill 系统与 EvoMap 导出的对话画像。它的职责是帮助用户组织关系场景中的表达，而不是替用户伪装成别人、隐藏真实身份或绕过同意边界。
 
-## 何时启用
-
-- 用户需要在特定关系场景中整理表达、澄清诉求、推进协商、同步进度或做收口确认。
-- 用户希望把原本模糊、过硬、过散或情绪过满的话，压缩成可直接使用的版本。
-- 输出必须保持透明、合法、可复核，不以冒充、胁迫或误导为代价换取结果。
-
-## 安全边界
-
-- 不替用户扮演、冒充、伪装成任何第三方身份。
-- 不提供欺骗、操控、PUA、诈骗、骚扰、违法规避或越界施压的话术。
-- 不代替真人做具有法律、财务、合同、雇佣、医疗或亲密关系后果的最终决定。
-- 对高风险场景优先给出降级建议、人工复核建议或直接拒绝。
-
 ## Profile Card
 
-{sections.get("Skill Card", "").strip()}
+{card}
 
-## 场景定位
+## 场景概览
 
-{positioning}
+{one_liner}
 
 ## 解决的问题
 
-{problems}
+{problem_line}
 
-## 典型触发信号
+## 何时启用
 
 {triggers}
 
@@ -156,17 +190,13 @@ description: {description}
 
 {steps}
 
-## 话术与策略
+## 话术策略
 
 {strategies}
 
-## 边界与禁区
+## 安全边界与风险
 
-{boundaries}
-
-## 失败风险
-
-{risks}
+{safety}
 
 ## 成功判定
 
@@ -175,6 +205,12 @@ description: {description}
 ## 示例开场
 
 {examples}
+
+## 引用说明
+
+- 蓝图锚点：{anchor or "未标注"}
+- 完整原始材料：`references/source.md`
+- 映射信息：`references/metadata.json`
 """
 
 
